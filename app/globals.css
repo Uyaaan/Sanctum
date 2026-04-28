@@ -1,26 +1,50 @@
 @import 'tailwindcss';
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Sanctum palette — Obsidian & Amber (Doctor Strange) */
+@theme {
+  --color-background: #0e0b08;
+  --color-surface: #1a1410;
+  --color-text: #f5e6c8;
+  --color-amber: #e8a33d;
+  --color-rune-gold: #c9a24c;
+  --color-crimson: #b22222;
+  --color-border: #2e2419;
+
+  /* Opacity variants for common uses */
+  --color-text-muted: #c4b896;
+  --color-text-subtle: #9a8f73;
 }
 
+/* Font assignments — next/font injects the actual CSS vars at runtime */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-cinzel);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  height: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  min-height: 100%;
+  background: var(--color-background);
+  color: var(--color-text);
+}
+
+/* Focus ring — amber glow */
+:focus-visible {
+  outline: 2px solid var(--color-amber);
+  outline-offset: 2px;
+}
+
+/* Thin custom scrollbar on dark bg */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-surface);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-rune-gold);
+  border-radius: 3px;
 }

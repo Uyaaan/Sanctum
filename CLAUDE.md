@@ -102,8 +102,10 @@ CSS vars defined in `app/globals.css`:
 - `eslint.config.mjs` — ESLint flat config (Next.js 16 ships flat config)
 - `jsconfig.json` — `@/*` import alias
 - `next.config.mjs` — Next.js config; PWA wrapper added Day 6
-- `package.json` — npm manifest, scripts, deps
+- `package.json` — npm manifest, scripts (`dev` runs on port 3002 on this machine — 3000/3001 are taken by other projects), deps
 - `postcss.config.mjs` — PostCSS config for Tailwind v4
+- `proxy.js` — root-level proxy (Next.js 16 renamed middleware → proxy); refreshes Supabase session, gates `/dashboard` etc. behind sign-in
 - `vercel.json` — Vercel Cron schedule (committed; activates only on deploy)
+- `.gitattributes` — LF-normalize text files; binary flags for images/fonts
 - `AGENTS.md` — cross-tool agent rules (mirrors this file)
 - `CLAUDE.md` — this file
