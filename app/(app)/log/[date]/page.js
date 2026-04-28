@@ -27,20 +27,5 @@ export default async function LogByDatePage({ params }) {
     notFound();
   }
 
-  return (
-    <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
-      <DailyLog userId={user.id} logDate={date} today={today} />
-      <aside
-        aria-label="Command Center"
-        className="border-border bg-surface/40 h-fit rounded border p-4"
-      >
-        <h2 className="font-display text-rune-gold text-xs tracking-[0.2em] uppercase">
-          Command Center
-        </h2>
-        <p className="text-text-subtle mt-2 text-xs">
-          Time-traveling. Today&apos;s entry: edit there.
-        </p>
-      </aside>
-    </div>
-  );
+  return <DailyLog userId={user.id} logDate={date} today={today} />;
 }

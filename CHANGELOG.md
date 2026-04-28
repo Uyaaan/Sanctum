@@ -61,6 +61,18 @@ Notable changes to Sanctum. Format: [Keep a Changelog](https://keepachangelog.co
 - `lib/validation/month-params.schema.js` — Yup schema validating year (2020–2100) and month (1–12).
 - `Journal` nav link added to (app) layout, defaulting to current YYYY/MM.
 
+#### Day 5b — Command Center
+
+- `<CommandCenter>` server component fetches `quick_links`, `scratchpad`, and `todos` in parallel; passes to `<CommandCenterTabs>` (client) — Radix Tabs with three panels.
+- `<QuickLinksPanel>` — react-hook-form + Yup add form, list of pinned links opening in new tabs, delete with `window.confirm`.
+- `<ScratchpadPanel>` — single plaintext textarea with 1500ms-debounced autosave via `useAutosave` and `updateScratchpadAction`.
+- `<TodoListPanel>` — add form, active list + collapsible Done section, optimistic toggle, delete with confirm.
+- Server actions: `app/actions/quick-links.js` (create/delete), `app/actions/scratchpad.js` (upsert), `app/actions/todos.js` (create/toggle/delete).
+- DB helpers: `lib/db/quick-links.js`, `lib/db/scratchpad.js`, `lib/db/todos.js`.
+- Validation: `quick-link.schema.js` (label + URL https-only), `todo.schema.js` (1–500 chars).
+- `/dashboard` sidebar replaced with the live `<CommandCenter>` (340px column on lg+).
+- `/log/[date]` simplified to full-width daily log (Command Center stays on /dashboard).
+
 ### Notes
 
 - Vercel deploy intentionally deferred until v0.1 is feature-complete on localhost.
