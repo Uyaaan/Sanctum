@@ -45,6 +45,15 @@ Notable changes to Sanctum. Format: [Keep a Changelog](https://keepachangelog.co
 - `/wins` route — list view with sigil-filter chips, empty state, error state. Uses `searchParams.sigil` for filtering.
 - Sonner `<Toaster>` mounted in root layout (top-right, dark theme, palette-tinted). Toasts fire on win-saved success and on save errors.
 
+#### Day 4 — Search + Streak + Heatmap
+
+- `/search` route — server-rendered, GET form posts back to `/search?q=…`, runs `websearch_to_tsquery`-style match against `daily_logs.search_tsv` and `accomplishments.search_tsv` via Supabase `.textSearch()`.
+- `<SearchResults>` — grouped by Daily Log + Wins, highlights matched terms with `<mark>`, snippet preview windows around the match, links into `/log/[date]` for source entries.
+- `lib/db/search.js` — `searchAll(userId, query)` returns `{ logs, wins }` newest-first.
+- `<StreakBadge>` — server component, calls `current_streak` RPC, renders flame glyph + day count in the (app) layout header. Hidden when streak is 0.
+- `<HeatmapCalendar>` — server component, hand-rolled 53×7 SVG GitHub-style grid for the last 365 days. Intensity bucketed 0–4 from log char count + win count. Today cell stroked. Native `<title>` tooltips per cell. Mounted at the top of `/dashboard`.
+- (app) layout nav now includes `Search` link in addition to `Wins`.
+
 ### Notes
 
 - Vercel deploy intentionally deferred until v0.1 is feature-complete on localhost.

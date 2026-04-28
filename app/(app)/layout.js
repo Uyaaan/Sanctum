@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server';
 import { todayInZone } from '@/lib/format/date';
 import { RuneDivider } from '@/components/RuneDivider';
 import { QuickWin } from '@/components/QuickWin';
+import { StreakBadge } from '@/components/StreakBadge';
 
 export default async function AppLayout({ children }) {
   const user = await requireUser();
@@ -28,7 +29,14 @@ export default async function AppLayout({ children }) {
           >
             Sanctum
           </Link>
-          <nav aria-label="Primary" className="flex items-center gap-4">
+          <nav aria-label="Primary" className="flex items-center gap-3 sm:gap-4">
+            <StreakBadge userId={user.id} today={today} />
+            <Link
+              href="/search"
+              className="text-text-muted hover:text-amber text-sm transition-colors"
+            >
+              Search
+            </Link>
             <Link
               href="/wins"
               className="text-text-muted hover:text-amber text-sm transition-colors"
