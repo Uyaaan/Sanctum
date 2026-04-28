@@ -4,6 +4,12 @@ Notable changes to Sanctum. Format: [Keep a Changelog](https://keepachangelog.co
 
 ## [Unreleased]
 
+(no unreleased changes)
+
+## [0.1.0] - 2026-04-28
+
+**v0.1 MVP — localhost-only.** Daily log + accomplishments + monthly journal + command center, all wired against Supabase with RLS, full-text search, streak counter, year heatmap, and a Web Push pipeline ready for Vercel Cron post-deploy.
+
 ### Added
 
 - Project scaffolded via `create-next-app@latest` (Next.js 16.2.4, React 19.2.4, Tailwind v4, ESLint 9, Turbopack dev)
@@ -89,6 +95,15 @@ Notable changes to Sanctum. Format: [Keep a Changelog](https://keepachangelog.co
   - `POST /api/push/tick` — `CRON_SECRET` Bearer-gated; admin-client query of profiles whose local time is within ±2 min of `sanctum_bell_time`; web-push dispatch with `web-push` package; auto-prunes stale subscriptions on 404/410.
 - `public/sw.js` — service worker handling `push` (showNotification with sanctum-bell tag) and `notificationclick` (focus-or-open `/dashboard`).
 - `Settings` nav link added to (app) layout.
+
+### Deferred (not in v0.1)
+
+- Playwright E2E suite — framework not yet installed; backfilled in v0.2 polish pass.
+- PWA install (manifest + 192/512 icons) — service worker is registered for push, but app is not yet installable to home screen.
+- AI-narrative monthly summary — month_summary RPC does templated aggregation only; AI add-on planned for v0.2.
+- Mandala monthly visualization — feature-flag gate not added; deferred to v0.2.
+- Custom user-defined tags UI — schema supports it, no UI yet (sigils only for v0.1).
+- Sentry error tracking — defer to deploy time.
 
 ### Notes
 

@@ -80,16 +80,22 @@ CSS vars defined in `app/globals.css`:
 > Auto-regenerate this section after every commit that adds/removes top-level files. Touch only the lines that changed (token-efficient).
 
 - `app/` — Next.js App Router: routes, layouts, route handlers
-- `app/(auth)/` — public auth-related routes (sign-in, callback)
-- `app/(app)/` — auth-walled routes; layout enforces `requireUser()`
-- `app/api/` — route handlers (push, health)
-- `components/` — PascalCase folders, each with `index.js` re-export. Co-located styles, hooks, tests
-- `lib/` — Supabase clients, auth guards, validation schemas, audit, rate-limit, push helpers, formatters, structured logger
-- `hooks/` — shared client hooks (autosave, theme, reduced-motion-aware)
-- `tests/` — Playwright E2E + fixtures (appears Day 7)
-- `supabase/migrations/` — versioned SQL migrations (appears Day 1+)
-- `supabase/functions/` — Edge Functions (if any; bell uses Vercel Cron path so this may stay empty)
-- `public/` — static assets (PWA icons, manifest, generated service worker)
+- `app/(auth)/sign-in/` and `app/(auth)/auth/callback/` — public auth surface
+- `app/(app)/` — auth-walled routes (`dashboard`, `log/[date]`, `wins`, `journal/[year]/[month]`, `search`, `settings`); layout enforces `requireUser()` and renders shared header + nav + `<QuickWin>` FAB
+- `app/api/push/{subscribe,unsubscribe,tick}/` — Web Push endpoints; `tick` is `CRON_SECRET`-gated for Vercel Cron
+- `app/actions/` — server actions: `accomplishments.js`, `quick-links.js`, `scratchpad.js`, `todos.js`, `profile.js`, `push.js`
+- `components/` — PascalCase folders, each with `index.js` re-export. Includes `DailyLog`, `DailyLogEditor`, `DateScrubber`, `QuickWin`, `Sigil` (+ glyphs), `RuneDivider`, `StreakBadge`, `HeatmapCalendar`, `SearchForm`, `SearchResults`, `MonthBrowser`, `MonthSummary`, `CommandCenter` (Tabs + 3 panels), `SettingsForm`, `PushSubscribeButton`, primitives (`EmptyState`, `ErrorState`, `Skeleton`)
+- `lib/supabase/` — `client.js` (browser), `server.js` (server-component cookie-aware), `admin.js` (service-role for cron tick, server-only)
+- `lib/auth/guards.js` — `requireUser()` server helper
+- `lib/db/` — typed-ish access helpers per resource: `daily-logs`, `accomplishments`, `quick-links`, `scratchpad`, `todos`, `profiles`, `search`
+- `lib/validation/` — Yup schemas, one file per resource (`daily-log`, `accomplishment`, `quick-link`, `todo`, `month-params`, `profile`)
+- `lib/format/date.js` — `todayInZone`, `formatLogDate` (date-fns + date-fns-tz)
+- `hooks/useAutosave.js` — debounced save status hook
+- `tests/` — Playwright E2E + fixtures (deferred to v0.2; framework not yet installed)
+- `supabase/migrations/` — versioned SQL: 0001 profiles, 0002 core tables, 0003 search indexes, 0004 streak fn, 0005 hardening, 0006 seed-tags trigger, 0007 month_summary fn, 0008 push_subscriptions
+- `supabase/functions/` — Edge Functions placeholder (currently unused; bell pipeline goes through Vercel Cron path)
+- `public/sw.js` — Web Push service worker (registered by `<PushSubscribeButton>` from `/settings`)
+- `public/` — static assets
 - `.github/workflows/` — CI config
 - `.husky/` — pre-commit hooks
 - `ROADMAP.md` — phases, risks, backlog
