@@ -18,6 +18,21 @@ Notable changes to Sanctum. Format: [Keep a Changelog](https://keepachangelog.co
 - Sanctum palette + Cinzel/Inter fonts wired in `app/globals.css` and `app/layout.js`
 - `supabase/migrations/0001_profiles.sql` — profiles table, RLS policies, `handle_new_user` trigger, `set_updated_at` helper
 
+#### Day 2 — Schema & Daily Log core
+
+- Migrations applied:
+  - `0002_core_tables.sql` — `daily_logs`, `accomplishments`, `tags`, `entry_tags`, `accomplishment_tags`, `quick_links`, `scratchpad`, `todos`, `audit_logs` with full RLS policies (SELECT/INSERT/UPDATE/DELETE on owned rows)
+  - `0003_search_indexes.sql` — `pg_trgm` extension + generated `tsvector` columns + GIN indexes on `daily_logs.content_md` and `accomplishments.text`
+  - `0004_streak_function.sql` — `current_streak(user_id, today)` SQL function (counts consecutive non-empty daily logs)
+  - `0005_security_hardening.sql` — pinned `search_path` on `set_updated_at` and `current_streak`; revoked EXECUTE on `handle_new_user` from anon/authenticated/PUBLIC
+  - `0006_seed_tags_trigger.sql` — `handle_new_user` now also creates a `scratchpad` row and seeds the 4 starter sigil tags (Breakthrough, Persistence, Learned, Helped Someone). Backfilled the same data for existing users.
+- Component primitives: `<RuneDivider>`, `<Skeleton>`, `<EmptyState>`, `<ErrorState>`, `<Sigil name="...">` with 4 SVG glyphs in `components/Sigil/glyphs/`
+- `<DailyLog>` server component fetches today's row (auto-creates if missing) and renders `<DailyLogEditor>` (client) with structured/freeform mode toggle and 800ms-debounced autosave (`hooks/useAutosave.js`)
+- `lib/db/daily-logs.js` — `getDailyLog`, `getOrCreateDailyLog`
+- `lib/format/date.js` — `todayInZone`, `formatLogDate` (uses `date-fns` + `date-fns-tz`)
+- `lib/validation/daily-log.schema.js` — Yup schemas for structured / freeform / mode / date params
+- `/dashboard` now renders today's daily log with the user's local-timezone date (defaults to `Asia/Manila` from `profiles.sanctum_bell_timezone`) plus a Command Center placeholder column
+
 ### Notes
 
 - Vercel deploy intentionally deferred until v0.1 is feature-complete on localhost.
