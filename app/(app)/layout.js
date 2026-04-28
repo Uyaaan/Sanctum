@@ -18,6 +18,8 @@ export default async function AppLayout({ children }) {
 
   const timezone = profile?.sanctum_bell_timezone ?? 'Asia/Manila';
   const today = todayInZone(timezone);
+  const journalYear = today.slice(0, 4);
+  const journalMonth = today.slice(5, 7);
 
   return (
     <main className="bg-background min-h-screen">
@@ -31,6 +33,12 @@ export default async function AppLayout({ children }) {
           </Link>
           <nav aria-label="Primary" className="flex items-center gap-3 sm:gap-4">
             <StreakBadge userId={user.id} today={today} />
+            <Link
+              href={`/journal/${journalYear}/${journalMonth}`}
+              className="text-text-muted hover:text-amber text-sm transition-colors"
+            >
+              Journal
+            </Link>
             <Link
               href="/search"
               className="text-text-muted hover:text-amber text-sm transition-colors"

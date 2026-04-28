@@ -54,6 +54,13 @@ Notable changes to Sanctum. Format: [Keep a Changelog](https://keepachangelog.co
 - `<HeatmapCalendar>` — server component, hand-rolled 53×7 SVG GitHub-style grid for the last 365 days. Intensity bucketed 0–4 from log char count + win count. Today cell stroked. Native `<title>` tooltips per cell. Mounted at the top of `/dashboard`.
 - (app) layout nav now includes `Search` link in addition to `Wins`.
 
+#### Day 5a — Monthly Journal
+
+- Migration `0007_month_summary_function.sql` — `month_summary(user_id, year, month)` SQL function returns a JSONB blob: `month_label`, `entry_count`, `win_count`, `longest_streak_in_month` (gaps-and-islands), `top_tags` (top 5), `weeks` (entries grouped by week_start with 240-char previews), `wins` (with sigil_keys arrays).
+- `/journal/[year]/[month]` route — server-fetches the RPC, renders `<MonthBrowser>` (prev/next nav with future-month disabled) and `<MonthSummary>` (stats grid, top sigils, wins list, weekly echo).
+- `lib/validation/month-params.schema.js` — Yup schema validating year (2020–2100) and month (1–12).
+- `Journal` nav link added to (app) layout, defaulting to current YYYY/MM.
+
 ### Notes
 
 - Vercel deploy intentionally deferred until v0.1 is feature-complete on localhost.
