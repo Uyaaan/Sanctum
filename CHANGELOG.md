@@ -33,6 +33,18 @@ Notable changes to Sanctum. Format: [Keep a Changelog](https://keepachangelog.co
 - `lib/validation/daily-log.schema.js` — Yup schemas for structured / freeform / mode / date params
 - `/dashboard` now renders today's daily log with the user's local-timezone date (defaults to `Asia/Manila` from `profiles.sanctum_bell_timezone`) plus a Command Center placeholder column
 
+#### Day 3 — Time Stone scrubber + Accomplishments
+
+- `<DateScrubber>` component on the daily log header — prev/next chevrons, native `<input type="date">` calendar picker (max-capped at today), Today button. Routes to `/dashboard` for today and `/log/[date]` for past days.
+- `/log/[date]` route — reuses `<DailyLog>` to time-travel; rejects future dates and malformed params via `dateParamSchema`. Auto-creates an empty row for past days via `getOrCreateDailyLog`.
+- Shared `(app)` layout now hosts the Sanctum header + `Wins` nav link + `<QuickWin>` floating action button on every authenticated page.
+- `<QuickWin>` FAB — Radix Dialog with text + sigil tag picker + date input, react-hook-form + Yup, calls a server action.
+- `app/actions/accomplishments.js` — `createAccomplishmentAction` server action (Yup validation, `revalidatePath` of `/wins` and `/dashboard`).
+- `lib/db/accomplishments.js` — `createAccomplishment` (inserts win + optional sigil-tag join row), `listAccomplishments` (server-filterable by sigil_key via `!inner` join).
+- `lib/validation/accomplishment.schema.js` — Yup schemas for win input + sigil filter param.
+- `/wins` route — list view with sigil-filter chips, empty state, error state. Uses `searchParams.sigil` for filtering.
+- Sonner `<Toaster>` mounted in root layout (top-right, dark theme, palette-tinted). Toasts fire on win-saved success and on save errors.
+
 ### Notes
 
 - Vercel deploy intentionally deferred until v0.1 is feature-complete on localhost.

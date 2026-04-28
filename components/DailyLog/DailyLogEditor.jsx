@@ -4,6 +4,7 @@ import { useCallback, useState } from 'react';
 import { useAutosave } from '@/hooks/useAutosave';
 import { createClient } from '@/lib/supabase/client';
 import { formatLogDate } from '@/lib/format/date';
+import { DateScrubber } from '@/components/DateScrubber';
 
 function structuredToMd({ what_i_did, wins, blockers, tomorrow }) {
   return [
@@ -16,7 +17,7 @@ function structuredToMd({ what_i_did, wins, blockers, tomorrow }) {
     .join('\n\n');
 }
 
-export function DailyLogEditor({ initialLog }) {
+export function DailyLogEditor({ initialLog, today }) {
   const [mode, setMode] = useState(initialLog.mode);
   const [structured, setStructured] = useState({
     what_i_did: initialLog.content?.what_i_did ?? '',
@@ -52,10 +53,13 @@ export function DailyLogEditor({ initialLog }) {
 
   return (
     <section className="space-y-4">
-      <header className="flex items-center justify-between gap-2">
-        <h2 className="font-display text-amber text-xl font-semibold">
-          {formatLogDate(initialLog.log_date)}
-        </h2>
+      <header className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-col gap-1">
+          <h2 className="font-display text-amber text-xl font-semibold">
+            {formatLogDate(initialLog.log_date)}
+          </h2>
+          <DateScrubber logDate={initialLog.log_date} today={today} />
+        </div>
         <div className="flex items-center gap-3">
           <SaveStatus status={status} />
           <ModeToggle mode={mode} onChange={setMode} />
