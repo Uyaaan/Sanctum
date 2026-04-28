@@ -51,6 +51,13 @@ export default async function AppLayout({ children }) {
             >
               Wins
             </Link>
+            <Link
+              href="/settings"
+              className="text-text-muted hover:text-amber text-sm transition-colors"
+              aria-label="Settings"
+            >
+              Settings
+            </Link>
             <span className="text-text-subtle hidden text-sm sm:inline">
               {profile?.display_name ?? user.email}
             </span>

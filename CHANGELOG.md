@@ -73,6 +73,23 @@ Notable changes to Sanctum. Format: [Keep a Changelog](https://keepachangelog.co
 - `/dashboard` sidebar replaced with the live `<CommandCenter>` (340px column on lg+).
 - `/log/[date]` simplified to full-width daily log (Command Center stays on /dashboard).
 
+#### Day 6 — Settings + Sanctum Bell
+
+- Migration `0008_push_subscriptions.sql` — `push_subscriptions` table with `endpoint UNIQUE`, RLS policies (select/insert/delete on own rows).
+- VAPID keys generated and saved to `.env.local` (`NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`).
+- `/settings` page — `<SettingsForm>` (display name, bell time, bell timezone via dropdown of common IANA zones) + `<PushSubscribeButton>` (subscribe / unsubscribe / send test push).
+- `lib/db/profiles.js` — `getProfile` + `updateProfile`.
+- `lib/supabase/admin.js` — `createAdminClient` for service-role server-only operations (Vercel Cron tick).
+- `lib/validation/profile.schema.js` — Yup schemas for profile + push subscription payloads.
+- Server action: `app/actions/profile.js#updateProfileAction`.
+- Server action: `app/actions/push.js#sendTestPushAction` — fires a test push to the current user's subscriptions; auto-prunes 404/410 (stale) endpoints.
+- API routes:
+  - `POST /api/push/subscribe` — auth-gated, upserts a push subscription row by endpoint.
+  - `POST /api/push/unsubscribe` — auth-gated, deletes the row by endpoint.
+  - `POST /api/push/tick` — `CRON_SECRET` Bearer-gated; admin-client query of profiles whose local time is within ±2 min of `sanctum_bell_time`; web-push dispatch with `web-push` package; auto-prunes stale subscriptions on 404/410.
+- `public/sw.js` — service worker handling `push` (showNotification with sanctum-bell tag) and `notificationclick` (focus-or-open `/dashboard`).
+- `Settings` nav link added to (app) layout.
+
 ### Notes
 
 - Vercel deploy intentionally deferred until v0.1 is feature-complete on localhost.
