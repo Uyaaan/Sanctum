@@ -1,11 +1,33 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { toast } from 'sonner';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { todoSchema } from '@/lib/validation/todo.schema';
-import { createTodoAction, deleteTodoAction, toggleTodoAction } from '@/app/actions/todos';
+import {
+  createTodoAction,
+  deleteTodoAction,
+  toggleTodoAction,
+  updateTodoAction,
+  reorderTodosAction,
+} from '@/app/actions/todos';
 
 export function TodoListPanel({ initialTodos }) {
   const [todos, setTodos] = useState(initialTodos);
@@ -20,6 +42,11 @@ export function TodoListPanel({ initialTodos }) {
     resolver: yupResolver(todoSchema),
     defaultValues: { text: '' },
   });
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  );
 
   function onAdd(data) {
     const formData = new FormData();
@@ -61,7 +88,6 @@ export function TodoListPanel({ initialTodos }) {
       const result = await toggleTodoAction(formData);
       if (!result?.ok) {
         toast.error(result?.error ?? 'Failed.');
-        // Revert
         setTodos((prev) =>
           prev.map((t) =>
             t.id === id
@@ -70,6 +96,18 @@ export function TodoListPanel({ initialTodos }) {
           ),
         );
       }
+    });
+  }
+
+  function onRename(id, newText) {
+    if (!newText.trim()) return;
+    setTodos((prev) => prev.map((t) => (t.id === id ? { ...t, text: newText } : t)));
+    const formData = new FormData();
+    formData.append('id', id);
+    formData.append('text', newText.trim());
+    startTransition(async () => {
+      const result = await updateTodoAction(formData);
+      if (!result?.ok) toast.error(result?.error ?? 'Failed to rename.');
     });
   }
 
@@ -87,6 +125,22 @@ export function TodoListPanel({ initialTodos }) {
     });
   }
 
+  function handleDragEnd(event) {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    setTodos((prev) => {
+      const active_todo = prev.find((t) => t.id === active.id);
+      const over_todo = prev.find((t) => t.id === over.id);
+      if (active_todo?.is_done !== over_todo?.is_done) return prev;
+      const oldIndex = prev.findIndex((t) => t.id === active.id);
+      const newIndex = prev.findIndex((t) => t.id === over.id);
+      const next = arrayMove(prev, oldIndex, newIndex);
+      reorderTodosAction(next.filter((t) => !t.is_done).map((t) => t.id)).catch(() => {});
+      return next;
+    });
+  }
+
   const active = todos.filter((t) => !t.is_done);
   const done = todos.filter((t) => t.is_done);
 
@@ -97,17 +151,17 @@ export function TodoListPanel({ initialTodos }) {
           type="text"
           {...register('text')}
           placeholder="What needs doing?"
-          className="border-border bg-background text-text placeholder-text-subtle focus:border-amber focus:ring-amber w-full rounded border px-2 py-1 text-xs transition-colors outline-none focus:ring-1"
+          className="border-border bg-subtle text-text placeholder-text-subtle focus:border-accent focus:ring-accent w-full rounded border px-2 py-1 text-xs transition-colors outline-none focus:ring-1"
         />
         {errors.text && (
-          <p className="text-crimson text-[0.65rem]" role="alert">
+          <p className="text-danger text-[0.65rem]" role="alert">
             {errors.text.message}
           </p>
         )}
         <button
           type="submit"
           disabled={isSubmitting || isPending}
-          className="bg-amber text-background hover:bg-amber/90 w-full rounded py-1.5 text-xs font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+          className="bg-accent hover:bg-accent/90 w-full rounded py-1.5 text-xs font-semibold text-white transition-colors disabled:cursor-not-allowed disabled:opacity-50"
         >
           + Add todo
         </button>
@@ -118,11 +172,28 @@ export function TodoListPanel({ initialTodos }) {
       ) : (
         <>
           {active.length > 0 && (
-            <ul className="space-y-1.5" role="list">
-              {active.map((todo) => (
-                <TodoRow key={todo.id} todo={todo} onToggle={onToggle} onDelete={onDelete} />
-              ))}
-            </ul>
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
+            >
+              <SortableContext
+                items={active.map((t) => t.id)}
+                strategy={verticalListSortingStrategy}
+              >
+                <ul className="space-y-1.5" role="list">
+                  {active.map((todo) => (
+                    <SortableTodoRow
+                      key={todo.id}
+                      todo={todo}
+                      onToggle={onToggle}
+                      onDelete={onDelete}
+                      onRename={onRename}
+                    />
+                  ))}
+                </ul>
+              </SortableContext>
+            </DndContext>
           )}
           {done.length > 0 && (
             <details className="text-text-subtle">
@@ -131,7 +202,13 @@ export function TodoListPanel({ initialTodos }) {
               </summary>
               <ul className="mt-2 space-y-1.5" role="list">
                 {done.map((todo) => (
-                  <TodoRow key={todo.id} todo={todo} onToggle={onToggle} onDelete={onDelete} />
+                  <TodoRow
+                    key={todo.id}
+                    todo={todo}
+                    onToggle={onToggle}
+                    onDelete={onDelete}
+                    onRename={onRename}
+                  />
                 ))}
               </ul>
             </details>
@@ -142,31 +219,115 @@ export function TodoListPanel({ initialTodos }) {
   );
 }
 
-function TodoRow({ todo, onToggle, onDelete }) {
+function SortableTodoRow({ todo, onToggle, onDelete, onRename }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: todo.id,
+  });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
   return (
-    <li className="group flex items-start gap-2">
+    <li ref={setNodeRef} style={style}>
+      <TodoRow
+        todo={todo}
+        onToggle={onToggle}
+        onDelete={onDelete}
+        onRename={onRename}
+        dragHandleProps={{ ...attributes, ...listeners }}
+      />
+    </li>
+  );
+}
+
+function TodoRow({ todo, onToggle, onDelete, onRename, dragHandleProps }) {
+  const [editing, setEditing] = useState(false);
+  const [editValue, setEditValue] = useState(todo.text);
+  const inputRef = useRef(null);
+
+  function startEdit() {
+    setEditing(true);
+    setEditValue(todo.text);
+    setTimeout(() => inputRef.current?.focus(), 0);
+  }
+
+  function commitEdit() {
+    setEditing(false);
+    if (editValue.trim() && editValue !== todo.text) {
+      onRename(todo.id, editValue.trim());
+    }
+  }
+
+  return (
+    <div className="group flex items-start gap-2">
+      {dragHandleProps && (
+        <button
+          {...dragHandleProps}
+          type="button"
+          aria-label="Drag to reorder"
+          className="text-text-subtle mt-0.5 cursor-grab opacity-0 transition-opacity group-hover:opacity-60 active:cursor-grabbing"
+        >
+          <GripIcon size={12} />
+        </button>
+      )}
       <input
         type="checkbox"
         checked={todo.is_done}
         onChange={() => onToggle(todo.id, todo.is_done)}
         aria-label={todo.text}
-        className="border-border accent-amber mt-0.5 shrink-0"
+        className="border-border accent-accent mt-0.5 shrink-0"
       />
-      <span
-        className={`flex-1 text-xs ${
-          todo.is_done ? 'text-text-subtle line-through' : 'text-text-muted'
-        }`}
-      >
-        {todo.text}
-      </span>
+      {editing ? (
+        <input
+          ref={inputRef}
+          type="text"
+          value={editValue}
+          onChange={(e) => setEditValue(e.target.value)}
+          onBlur={commitEdit}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') commitEdit();
+            if (e.key === 'Escape') {
+              setEditing(false);
+              setEditValue(todo.text);
+            }
+          }}
+          className="border-border bg-subtle text-text focus:border-accent flex-1 rounded border px-1 py-0.5 text-xs outline-none focus:ring-1"
+        />
+      ) : (
+        <span
+          onDoubleClick={startEdit}
+          className={`flex-1 cursor-text text-xs ${
+            todo.is_done ? 'text-text-subtle line-through' : 'text-text-muted'
+          }`}
+          title="Double-click to rename"
+        >
+          {todo.text}
+        </span>
+      )}
       <button
         type="button"
         onClick={() => onDelete(todo.id, todo.text)}
         aria-label={`Delete ${todo.text}`}
-        className="text-text-subtle hover:text-crimson shrink-0 text-sm leading-none opacity-40 transition-all group-hover:opacity-100"
+        className="text-text-subtle hover:text-danger mt-0.5 shrink-0 text-sm leading-none opacity-0 transition-all group-hover:opacity-100"
       >
         ×
       </button>
-    </li>
+    </div>
+  );
+}
+
+function GripIcon({ size = 12 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <circle cx="9" cy="7" r="1.5" />
+      <circle cx="15" cy="7" r="1.5" />
+      <circle cx="9" cy="12" r="1.5" />
+      <circle cx="15" cy="12" r="1.5" />
+      <circle cx="9" cy="17" r="1.5" />
+      <circle cx="15" cy="17" r="1.5" />
+    </svg>
   );
 }

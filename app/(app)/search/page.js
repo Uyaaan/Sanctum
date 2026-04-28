@@ -21,7 +21,7 @@ export default async function SearchPage({ searchParams }) {
 
   return (
     <section className="space-y-6">
-      <h2 className="font-display text-amber text-2xl font-semibold">Search</h2>
+      <h2 className="text-text text-2xl font-semibold">Search</h2>
       <SearchForm initialQuery={query} />
       {query && <SearchResults results={results} query={query} />}
     </section>

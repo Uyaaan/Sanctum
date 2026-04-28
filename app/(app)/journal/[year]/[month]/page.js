@@ -36,7 +36,7 @@ export default async function MonthlyJournalPage({ params }) {
     <section className="space-y-6">
       <MonthBrowser year={year} month={month} today={today} />
       {summaryError ? (
-        <p className="text-crimson text-sm">Couldn&apos;t generate the summary. Try again.</p>
+        <p className="text-danger text-sm">Couldn&apos;t generate the summary. Try again.</p>
       ) : (
         <MonthSummary summary={summary} />
       )}

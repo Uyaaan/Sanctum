@@ -2,6 +2,58 @@
 
 Notable changes to Sanctum. Format: [Keep a Changelog](https://keepachangelog.com/), versioning: [SemVer](https://semver.org/).
 
+## [0.2.0] - 2026-04-28
+
+**v0.2 — UI overhaul + frictionless logging + full CRUD.** Complete visual rework (Linear/Notion-inspired light+dark design system), new collapsible sidebar navigation, full edit/delete on every resource, drag-to-reorder, custom date picker, slash commands, Markdown preview, day-of-week templates, on-this-day recall, image attachments, PWA install support.
+
+### Changed
+
+- **Design system:** replaced Obsidian & Amber (Doctor Strange) palette with clean modern indigo-accent light/dark token system (`--color-bg`, `--color-surface`, `--color-subtle`, `--color-accent`, `--color-danger`, etc.)
+- **Theme:** light/dark/system toggle persisted in `localStorage` + `profiles.theme_preference`; `ThemeProvider` sets `data-theme` on `<html>`
+- **Typography:** dropped Cinzel display font; Inter only, weight+size hierarchy
+- **Navigation:** top header replaced with collapsible sidebar (56px icon rail → 240px expanded on hover; pin button persists to `localStorage`); mobile bottom tab bar
+- **Sigils:** rebranded from SVG rune glyphs to colored inline dots + text labels
+- `DateScrubber` now uses custom `DatePicker` (Radix Popover + calendar grid with density dots) instead of native `<input type="date">`
+- `QuickWin` and `AccomplishmentEditDialog` date inputs use `DatePicker`
+
+### Added
+
+- `components/ThemeProvider/` — client context for light/dark/system theme
+- `components/ThemeToggle/` — 3-button toggle in Settings
+- `components/AppShell/` — sidebar shell + mobile bottom tab bar
+- `components/NavLink/` — active-aware nav link using `usePathname()`
+- `components/AccomplishmentEditDialog/` — edit+delete wins in place
+- `components/QuickLinkEditDialog/` — inline edit for quick links
+- `components/WinsList/` — client wrapper for wins page with optimistic edit/delete
+- `components/DatePicker/` — Radix Popover calendar with activity density dots
+- `components/PlanningPanel/` — future-dated entries + yesterday's tomorrow field on dashboard
+- `components/OnThisDayRibbon/` — entries from N years ago surfaced on dashboard
+- `components/MarkdownView/` — `react-markdown` + `remark-gfm` renderer for freeform mode
+- `components/SlashCommandMenu/` — slash command popover in freeform editor
+- `components/TemplatesForm/` — per-weekday structured template editor in Settings
+- `hooks/useSlashCommands.js` — detects `/cmd` at line start, filters, replaces on selection
+- Freeform editor: Edit/Preview toggle, drag-drop + paste image upload, slash commands
+- Drag-to-reorder on `QuickLinksPanel` and `TodoListPanel` via `@dnd-kit`
+- Inline double-click rename on todos
+- Daily log delete with type-to-confirm dialog (`AlertDialog`)
+- Future-date entries no longer 404 — `/log/YYYY-MM-DD` works for any date with an "Planning ahead" banner
+- `supabase/migrations/0009_log_image_attachments.sql` — `image_attachments` table + RLS
+- `supabase/migrations/0010_day_of_week_templates.sql` — `day_of_week_templates` table + RLS
+- `app/actions/images.js` — EXIF-strip via `sharp`, WebP conversion, Supabase Storage upload
+- `app/actions/calendar.js` — activity data for DatePicker density dots
+- `app/actions/planning.js` — future entries + yesterday's `tomorrow` field
+- `app/actions/on-this-day.js` — entries from 1/2/3/5 years ago
+- `app/actions/templates.js` — upsert day-of-week templates
+- `app/actions/daily-logs.js` — soft-delete daily log server action
+- `app/manifest.webmanifest` + `public/icons/{192,512,maskable-512}.png` — PWA installable
+- `public/sw.js` extended with shell cache + network-first fetch strategy
+- `app/share-in/route.js` — PWA Share Sheet target → creates a win
+
+### Removed
+
+- `components/RuneDivider/` — deleted; replaced with `<hr class="border-border">`
+- Cinzel font import from root layout
+
 ## [Unreleased]
 
 (no unreleased changes)

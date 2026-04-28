@@ -34,12 +34,12 @@ export function MonthBrowser({ year, month, today }) {
     <nav aria-label="Month browser" className="flex items-center justify-between gap-3">
       <Link
         href={`/journal/${prevYear}/${String(prevMonth).padStart(2, '0')}`}
-        className="text-text-muted hover:text-amber border-border hover:border-amber/50 rounded border px-2.5 py-1 text-xs transition-colors"
+        className="text-text-muted hover:text-accent border-border hover:border-accent/50 rounded border px-2.5 py-1 text-xs transition-colors"
       >
         ← {MONTH_NAMES[prevMonth - 1]}
       </Link>
 
-      <h2 className="font-display text-amber text-2xl font-semibold tracking-wide">
+      <h2 className="text-text text-xl font-semibold">
         {MONTH_NAMES[month - 1]} {year}
       </h2>
 
@@ -53,7 +53,7 @@ export function MonthBrowser({ year, month, today }) {
       ) : (
         <Link
           href={`/journal/${nextYear}/${String(nextMonth).padStart(2, '0')}`}
-          className="text-text-muted hover:text-amber border-border hover:border-amber/50 rounded border px-2.5 py-1 text-xs transition-colors"
+          className="text-text-muted hover:text-accent border-border hover:border-accent/50 rounded border px-2.5 py-1 text-xs transition-colors"
         >
           {MONTH_NAMES[nextMonth - 1]} →
         </Link>

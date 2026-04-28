@@ -14,8 +14,6 @@ function urlBase64ToUint8Array(base64String) {
 }
 
 export function PushSubscribeButton() {
-  // Lazy initializers run once on first render — safe for SSR (window check) and
-  // avoids tripping react-hooks/set-state-in-effect for synchronous browser-API reads.
   const [supported, setSupported] = useState(
     () => typeof window !== 'undefined' && 'serviceWorker' in navigator && 'PushManager' in window,
   );
@@ -133,14 +131,14 @@ export function PushSubscribeButton() {
             type="button"
             onClick={testPush}
             disabled={isPending}
-            className="border-amber/40 text-amber hover:bg-amber/10 rounded border px-3 py-1.5 text-xs font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+            className="border-accent/40 text-accent hover:bg-accent/10 rounded border px-3 py-1.5 text-xs font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isPending ? 'Sending…' : 'Send test push'}
           </button>
           <button
             type="button"
             onClick={unsubscribe}
-            className="border-border text-text-muted hover:text-crimson hover:border-crimson/40 rounded border px-3 py-1.5 text-xs transition-colors"
+            className="border-border text-text-muted hover:text-danger hover:border-danger/40 rounded border px-3 py-1.5 text-xs transition-colors"
           >
             Unsubscribe
           </button>
@@ -150,7 +148,7 @@ export function PushSubscribeButton() {
           type="button"
           onClick={subscribe}
           disabled={permission === 'denied'}
-          className="bg-amber text-background hover:bg-amber/90 rounded px-3 py-1.5 text-xs font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+          className="bg-accent hover:bg-accent/90 rounded px-3 py-1.5 text-xs font-semibold text-white transition-colors disabled:cursor-not-allowed disabled:opacity-50"
         >
           {permission === 'denied' ? 'Notifications blocked' : 'Subscribe to Sanctum Bell'}
         </button>

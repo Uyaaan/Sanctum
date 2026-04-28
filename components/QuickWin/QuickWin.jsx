@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { accomplishmentSchema } from '@/lib/validation/accomplishment.schema';
 import { createAccomplishmentAction } from '@/app/actions/accomplishments';
 import { Sigil, SIGIL_KEYS, SIGIL_LABELS } from '@/components/Sigil';
+import { DatePicker } from '@/components/DatePicker';
 
 export function QuickWin({ today }) {
   const [open, setOpen] = useState(false);
@@ -26,6 +27,7 @@ export function QuickWin({ today }) {
   });
 
   const sigilKey = useWatch({ control, name: 'sigil_key' });
+  const occurredOn = useWatch({ control, name: 'occurred_on' });
 
   function onSubmit(data) {
     const formData = new FormData();
@@ -36,7 +38,7 @@ export function QuickWin({ today }) {
     startTransition(async () => {
       const result = await createAccomplishmentAction(formData);
       if (result?.ok) {
-        toast.success('Win inscribed.');
+        toast.success('Win recorded.');
         reset({ text: '', sigil_key: null, occurred_on: today });
         setOpen(false);
       } else {
@@ -51,20 +53,19 @@ export function QuickWin({ today }) {
         <button
           type="button"
           aria-label="Add a win"
-          className="bg-amber text-background hover:bg-amber/90 fixed right-6 bottom-6 z-30 rounded-full px-4 py-3 text-sm font-semibold shadow-lg shadow-black/40 transition-colors"
+          className="bg-accent hover:bg-accent/90 fixed right-6 bottom-6 z-30 rounded-full px-4 py-3 text-sm font-semibold text-white shadow-lg transition-colors md:bottom-6"
+          style={{ bottom: 'calc(env(safe-area-inset-bottom) + 1.5rem)' }}
         >
           + Add a win
         </button>
       </Dialog.Trigger>
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 z-40 bg-black/70 backdrop-blur-sm" />
+        <Dialog.Overlay className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm" />
         <Dialog.Content
-          className="border-rune-gold/30 bg-surface fixed top-1/2 left-1/2 z-50 w-[calc(100%-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 rounded border p-6 shadow-2xl shadow-black/60"
+          className="border-border bg-surface fixed top-1/2 left-1/2 z-50 w-[calc(100%-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-lg border p-6 shadow-xl"
           aria-describedby="quickwin-desc"
         >
-          <Dialog.Title className="font-display text-amber text-lg font-semibold">
-            Inscribe a win
-          </Dialog.Title>
+          <Dialog.Title className="text-text text-lg font-semibold">Add a win</Dialog.Title>
           <Dialog.Description id="quickwin-desc" className="text-text-subtle mt-1 text-xs">
             Mark a breakthrough, persistence moment, or learning.
           </Dialog.Description>
@@ -78,18 +79,18 @@ export function QuickWin({ today }) {
                 id="win-text"
                 rows={3}
                 {...register('text')}
-                className="border-border bg-background text-text placeholder-text-subtle focus:border-amber focus:ring-amber mt-1 w-full rounded border px-3 py-2 text-sm transition-colors outline-none focus:ring-1"
+                className="border-border bg-subtle text-text placeholder-text-subtle focus:border-accent focus:ring-accent mt-1 w-full rounded border px-3 py-2 text-sm transition-colors outline-none focus:ring-1"
                 placeholder="Pushed the auth fix that's been bugging me…"
               />
               {errors.text && (
-                <p role="alert" className="text-crimson mt-1 text-xs">
+                <p role="alert" className="text-danger mt-1 text-xs">
                   {errors.text.message}
                 </p>
               )}
             </div>
 
             <div>
-              <span className="text-text-muted block text-sm font-medium">Sigil (optional)</span>
+              <span className="text-text-muted block text-sm font-medium">Tag (optional)</span>
               <div className="mt-2 flex flex-wrap gap-2">
                 {SIGIL_KEYS.map((key) => {
                   const isSelected = sigilKey === key;
@@ -103,11 +104,11 @@ export function QuickWin({ today }) {
                       }
                       className={`flex items-center gap-1.5 rounded border px-2.5 py-1.5 text-xs transition-colors ${
                         isSelected
-                          ? 'border-amber bg-amber/10 text-amber'
-                          : 'border-border text-text-muted hover:border-amber/50'
+                          ? 'border-accent bg-accent/10 text-accent'
+                          : 'border-border text-text-muted hover:border-accent/50'
                       }`}
                     >
-                      <Sigil name={key} size={14} />
+                      <Sigil name={key} />
                       {SIGIL_LABELS[key]}
                     </button>
                   );
@@ -116,18 +117,16 @@ export function QuickWin({ today }) {
             </div>
 
             <div>
-              <label htmlFor="win-date" className="text-text-muted block text-sm font-medium">
-                Date
-              </label>
-              <input
-                id="win-date"
-                type="date"
-                max={today}
-                {...register('occurred_on')}
-                className="border-border bg-background text-text focus:border-amber focus:ring-amber mt-1 rounded border px-2 py-1 text-sm outline-none focus:ring-1"
-              />
+              <span className="text-text-muted block text-sm font-medium">Date</span>
+              <div className="mt-1">
+                <DatePicker
+                  value={occurredOn}
+                  onChange={(date) => setValue('occurred_on', date, { shouldValidate: true })}
+                  disableFuture={false}
+                />
+              </div>
               {errors.occurred_on && (
-                <p role="alert" className="text-crimson mt-1 text-xs">
+                <p role="alert" className="text-danger mt-1 text-xs">
                   {errors.occurred_on.message}
                 </p>
               )}
@@ -145,9 +144,9 @@ export function QuickWin({ today }) {
               <button
                 type="submit"
                 disabled={isPending}
-                className="bg-amber text-background hover:bg-amber/90 rounded px-4 py-1.5 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+                className="bg-accent hover:bg-accent/90 rounded px-4 py-1.5 text-sm font-semibold text-white transition-colors disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {isPending ? 'Saving…' : 'Inscribe'}
+                {isPending ? 'Saving…' : 'Save'}
               </button>
             </div>
           </form>

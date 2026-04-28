@@ -1,11 +1,52 @@
-/* Sanctum service worker — handles Web Push only. */
+/* Sanctum service worker — Web Push + offline shell cache */
 
-self.addEventListener('install', () => {
+const CACHE_NAME = 'sanctum-shell-v1';
+const SHELL_URLS = ['/dashboard', '/wins', '/search', '/settings'];
+
+self.addEventListener('install', (event) => {
   self.skipWaiting();
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) =>
+      cache.addAll(SHELL_URLS).catch(() => {}),
+    ),
+  );
 });
 
 self.addEventListener('activate', (event) => {
-  event.waitUntil(self.clients.claim());
+  event.waitUntil(
+    caches
+      .keys()
+      .then((keys) =>
+        Promise.all(
+          keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)),
+        ),
+      )
+      .then(() => self.clients.claim()),
+  );
+});
+
+self.addEventListener('fetch', (event) => {
+  const { request } = event;
+  const url = new URL(request.url);
+
+  // Only handle same-origin GET requests
+  if (url.origin !== self.location.origin || request.method !== 'GET') return;
+
+  // Skip Next.js internal routes and API calls
+  if (url.pathname.startsWith('/_next') || url.pathname.startsWith('/api')) return;
+
+  // Network-first for HTML pages, cache as fallback
+  event.respondWith(
+    fetch(request)
+      .then((response) => {
+        if (response.ok) {
+          const cloned = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, cloned));
+        }
+        return response;
+      })
+      .catch(() => caches.match(request)),
+  );
 });
 
 self.addEventListener('push', (event) => {
@@ -19,7 +60,7 @@ self.addEventListener('push', (event) => {
     try {
       data = { ...data, ...event.data.json() };
     } catch {
-      /* malformed payload — fall back to defaults */
+      /* malformed payload — use defaults */
     }
   }
 
@@ -27,8 +68,8 @@ self.addEventListener('push', (event) => {
     self.registration.showNotification(data.title, {
       body: data.body,
       tag: 'sanctum-bell',
-      badge: '/favicon.ico',
-      icon: '/favicon.ico',
+      badge: '/icons/icon-192.png',
+      icon: '/icons/icon-192.png',
       data: { url: data.url },
     }),
   );

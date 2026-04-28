@@ -41,9 +41,9 @@ export default function SignInPage() {
 
   if (sent) {
     return (
-      <div className="bg-background flex min-h-screen flex-col items-center justify-center px-4">
+      <div className="bg-bg flex min-h-screen flex-col items-center justify-center px-4">
         <div className="w-full max-w-sm space-y-4 text-center">
-          <h1 className="font-display text-amber text-2xl">The sanctum awaits.</h1>
+          <h1 className="text-text text-2xl font-semibold">Check your email</h1>
           <p className="text-text-muted text-sm">
             A magic link has been sent to your email. Click it to enter Sanctum.
           </p>
@@ -53,10 +53,10 @@ export default function SignInPage() {
   }
 
   return (
-    <div className="bg-background flex min-h-screen flex-col items-center justify-center px-4">
+    <div className="bg-bg flex min-h-screen flex-col items-center justify-center px-4">
       <div className="w-full max-w-sm space-y-8">
         <div className="space-y-1 text-center">
-          <h1 className="font-display text-amber text-3xl font-semibold">Sanctum</h1>
+          <h1 className="text-text text-3xl font-semibold">Sanctum</h1>
           <p className="text-text-subtle text-sm">Your personal work dashboard</p>
         </div>
 
@@ -70,20 +70,20 @@ export default function SignInPage() {
               type="email"
               autoComplete="email"
               autoFocus
-              className="border-border bg-surface text-text placeholder-text-subtle focus:border-amber focus:ring-amber w-full rounded border px-3 py-2 text-sm transition-colors outline-none focus:ring-1"
+              className="border-border bg-subtle text-text placeholder-text-subtle focus:border-accent focus:ring-accent w-full rounded border px-3 py-2 text-sm transition-colors outline-none focus:ring-1"
               placeholder="you@example.com"
               aria-describedby={errors.email ? 'email-error' : undefined}
               {...register('email')}
             />
             {errors.email && (
-              <p id="email-error" role="alert" className="text-crimson text-xs">
+              <p id="email-error" role="alert" className="text-danger text-xs">
                 {errors.email.message}
               </p>
             )}
           </div>
 
           {serverError && (
-            <p role="alert" className="text-crimson text-sm">
+            <p role="alert" className="text-danger text-sm">
               {serverError}
             </p>
           )}
@@ -91,7 +91,7 @@ export default function SignInPage() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="bg-amber text-background w-full rounded py-2.5 text-sm font-semibold transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+            className="bg-accent w-full rounded py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isSubmitting ? 'Sending…' : 'Send magic link'}
           </button>

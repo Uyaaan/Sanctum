@@ -13,7 +13,7 @@ export async function StreakBadge({ userId, today }) {
 
   return (
     <div
-      className="text-rune-gold border-rune-gold/30 bg-surface/40 inline-flex items-center gap-1.5 rounded border px-2 py-0.5"
+      className="text-accent border-accent/20 bg-subtle inline-flex items-center gap-1.5 rounded border px-2 py-0.5"
       role="status"
       aria-label={`Current streak: ${count} day${count === 1 ? '' : 's'}`}
     >

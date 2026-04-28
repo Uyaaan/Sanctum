@@ -24,7 +24,7 @@ export function ScratchpadPanel({ initialBody }) {
         placeholder="Anything you want to remember for now…"
         rows={8}
         aria-label="Scratchpad"
-        className="border-border bg-background text-text placeholder-text-subtle focus:border-amber focus:ring-amber w-full resize-y rounded border px-2 py-1.5 text-xs transition-colors outline-none focus:ring-1"
+        className="border-border bg-subtle text-text placeholder-text-subtle focus:border-accent focus:ring-accent w-full resize-y rounded border px-2 py-1.5 text-xs transition-colors outline-none focus:ring-1"
       />
       <SaveStatus status={status} />
     </div>
@@ -42,8 +42,8 @@ function SaveStatus({ status }) {
   };
   const colors = {
     saving: 'text-text-subtle',
-    saved: 'text-rune-gold',
-    error: 'text-crimson',
+    saved: 'text-accent',
+    error: 'text-danger',
   };
   return (
     <span className={`${colors[status]} text-[0.65rem]`} role="status" aria-live="polite">

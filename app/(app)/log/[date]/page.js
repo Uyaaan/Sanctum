@@ -23,9 +23,5 @@ export default async function LogByDatePage({ params }) {
   const timezone = profile?.sanctum_bell_timezone ?? 'Asia/Manila';
   const today = todayInZone(timezone);
 
-  if (date > today) {
-    notFound();
-  }
-
-  return <DailyLog userId={user.id} logDate={date} today={today} />;
+  return <DailyLog userId={user.id} logDate={date} today={today} isPlanned={date > today} />;
 }

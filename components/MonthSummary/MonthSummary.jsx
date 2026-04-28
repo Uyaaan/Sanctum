@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { formatLogDate } from '@/lib/format/date';
 import { Sigil } from '@/components/Sigil';
-import { RuneDivider } from '@/components/RuneDivider';
 import { EmptyState } from '@/components/EmptyState';
 
 export function MonthSummary({ summary }) {
@@ -35,16 +34,16 @@ export function MonthSummary({ summary }) {
 
       {top_tags && top_tags.length > 0 && (
         <section className="space-y-2">
-          <h3 className="font-display text-rune-gold text-xs tracking-[0.2em] uppercase">
-            Top Sigils
+          <h3 className="text-text-muted text-xs font-semibold tracking-wide uppercase">
+            Top Tags
           </h3>
           <div className="flex flex-wrap gap-2">
             {top_tags.map((t) => (
               <span
                 key={t.slug}
-                className="border-rune-gold/30 text-rune-gold bg-surface/40 inline-flex items-center gap-1.5 rounded border px-2.5 py-1 text-xs"
+                className="border-border text-text-muted bg-subtle inline-flex items-center gap-1.5 rounded border px-2.5 py-1 text-xs"
               >
-                {t.sigil_key && <Sigil name={t.sigil_key} size={12} />}
+                {t.sigil_key && <Sigil name={t.sigil_key} />}
                 <span>
                   {t.name} <span className="text-text-subtle">· {t.cnt}</span>
                 </span>
@@ -56,17 +55,17 @@ export function MonthSummary({ summary }) {
 
       {wins && wins.length > 0 && (
         <section className="space-y-3">
-          <h3 className="font-display text-rune-gold text-xs tracking-[0.2em] uppercase">
+          <h3 className="text-text-muted text-xs font-semibold tracking-wide uppercase">
             Wins ({wins.length})
           </h3>
           <ul className="divide-border border-border divide-y rounded border" role="list">
             {wins.map((w) => (
-              <li key={w.id} className="bg-surface/40 p-4">
+              <li key={w.id} className="p-4">
                 <div className="flex items-start justify-between gap-3">
                   <p className="text-text text-sm leading-relaxed whitespace-pre-wrap">{w.text}</p>
                   <Link
                     href={`/log/${w.occurred_on}`}
-                    className="text-text-subtle hover:text-amber shrink-0 text-xs transition-colors"
+                    className="text-text-subtle hover:text-accent shrink-0 text-xs transition-colors"
                   >
                     {formatLogDate(w.occurred_on, 'MMM d')} ↗
                   </Link>
@@ -74,7 +73,7 @@ export function MonthSummary({ summary }) {
                 {Array.isArray(w.sigil_keys) && w.sigil_keys.length > 0 && (
                   <div className="mt-2 flex gap-1.5">
                     {w.sigil_keys.map((key, i) => (
-                      <Sigil key={`${key}-${i}`} name={key} size={12} />
+                      <Sigil key={`${key}-${i}`} name={key} showLabel />
                     ))}
                   </div>
                 )}
@@ -86,13 +85,13 @@ export function MonthSummary({ summary }) {
 
       {weeks && weeks.length > 0 && (
         <section className="space-y-4">
-          <h3 className="font-display text-rune-gold text-xs tracking-[0.2em] uppercase">
+          <h3 className="text-text-muted text-xs font-semibold tracking-wide uppercase">
             Weekly Echo
           </h3>
           {weeks.map((w) => (
             <div key={w.week_start} className="space-y-2">
               <div className="flex items-center gap-3">
-                <h4 className="font-display text-text-muted text-sm">
+                <h4 className="text-text-muted text-sm font-medium">
                   Week of {formatLogDate(w.week_start, 'MMM d')}
                 </h4>
                 <span className="text-text-subtle text-xs">
@@ -104,7 +103,7 @@ export function MonthSummary({ summary }) {
                   <li key={entry.date} className="border-border/50 border-l-2 pl-3">
                     <Link href={`/log/${entry.date}`} className="group block">
                       <div className="flex items-baseline gap-2">
-                        <span className="text-amber text-xs font-medium group-hover:underline">
+                        <span className="text-accent text-xs font-medium group-hover:underline">
                           {formatLogDate(entry.date, 'EEE, MMM d')}
                         </span>
                         <span className="text-text-subtle text-[0.65rem] tracking-wider uppercase">
@@ -122,7 +121,7 @@ export function MonthSummary({ summary }) {
               </ul>
             </div>
           ))}
-          <RuneDivider className="pt-2" />
+          <hr className="border-border mt-4" />
         </section>
       )}
     </div>
@@ -141,9 +140,9 @@ function Stats({ entryCount, winCount, longestStreak }) {
 
 function Stat({ label, value }) {
   return (
-    <div className="border-border bg-surface/30 rounded border p-3">
+    <div className="border-border bg-subtle rounded border p-3">
       <dt className="text-text-subtle text-[0.65rem] tracking-[0.2em] uppercase">{label}</dt>
-      <dd className="font-display text-amber mt-1 text-2xl font-semibold tabular-nums">{value}</dd>
+      <dd className="text-accent mt-1 text-2xl font-semibold tabular-nums">{value}</dd>
     </div>
   );
 }

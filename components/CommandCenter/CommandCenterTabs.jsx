@@ -9,11 +9,11 @@ export function CommandCenterTabs({ quickLinks, scratchpadBody, todos }) {
   return (
     <Tabs.Root
       defaultValue="links"
-      className="border-border bg-surface/40 rounded border"
+      className="border-border bg-surface rounded border"
       aria-label="Command Center"
     >
       <div className="border-border border-b px-2">
-        <h2 className="font-display text-rune-gold px-2 pt-3 text-[0.65rem] tracking-[0.2em] uppercase">
+        <h2 className="text-text-muted px-2 pt-3 text-[0.65rem] font-medium tracking-[0.2em] uppercase">
           Command Center
         </h2>
         <Tabs.List className="mt-2 flex" role="tablist">
@@ -40,7 +40,7 @@ function TabTrigger({ value, children }) {
   return (
     <Tabs.Trigger
       value={value}
-      className="data-[state=active]:text-amber data-[state=active]:border-amber text-text-muted hover:text-text -mb-px border-b-2 border-transparent px-3 py-2 text-xs font-medium tracking-wider uppercase transition-colors"
+      className="data-[state=active]:text-accent data-[state=active]:border-accent text-text-muted hover:text-text -mb-px border-b-2 border-transparent px-3 py-2 text-xs font-medium tracking-wider uppercase transition-colors"
     >
       {children}
     </Tabs.Trigger>

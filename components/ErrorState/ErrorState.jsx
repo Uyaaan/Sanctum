@@ -9,13 +9,13 @@ export function ErrorState({
       className={`flex flex-col items-center justify-center gap-3 py-12 text-center ${className}`}
       role="alert"
     >
-      <h3 className="font-display text-crimson text-lg">{title}</h3>
+      <h3 className="text-danger text-lg font-medium">{title}</h3>
       {description && <p className="text-text-subtle max-w-xs text-sm">{description}</p>}
       {onRetry && (
         <button
           type="button"
           onClick={onRetry}
-          className="border-amber/40 text-amber hover:bg-amber/10 mt-2 rounded border bg-transparent px-3 py-1.5 text-sm transition-colors"
+          className="border-accent/40 text-accent hover:bg-accent/10 mt-2 rounded border bg-transparent px-3 py-1.5 text-sm transition-colors"
         >
           Retry
         </button>

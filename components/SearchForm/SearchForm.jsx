@@ -15,11 +15,11 @@ export function SearchForm({ initialQuery = '' }) {
         placeholder="Search entries and wins…"
         autoComplete="off"
         autoFocus
-        className="border-border bg-surface text-text placeholder-text-subtle focus:border-amber focus:ring-amber w-full rounded border px-3 py-2 text-sm transition-colors outline-none focus:ring-1"
+        className="border-border bg-subtle text-text placeholder-text-subtle focus:border-accent focus:ring-accent w-full rounded border px-3 py-2 text-sm transition-colors outline-none focus:ring-1"
       />
       <button
         type="submit"
-        className="bg-amber text-background hover:bg-amber/90 rounded px-4 py-2 text-sm font-semibold transition-colors disabled:opacity-50"
+        className="bg-accent hover:bg-accent/90 rounded px-4 py-2 text-sm font-semibold text-white transition-colors disabled:opacity-50"
         disabled={!value.trim()}
       >
         Search

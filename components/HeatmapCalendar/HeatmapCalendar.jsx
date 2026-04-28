@@ -88,15 +88,15 @@ export async function HeatmapCalendar({ userId, today }) {
   }
 
   return (
-    <figure className="border-border bg-surface/30 overflow-x-auto rounded border p-3">
-      <figcaption className="text-rune-gold font-display mb-2 text-[0.65rem] tracking-[0.2em] uppercase">
+    <figure className="border-border bg-subtle overflow-x-auto rounded border p-3">
+      <figcaption className="text-text-muted mb-2 text-[0.65rem] font-medium tracking-[0.2em] uppercase">
         Last 365 days
       </figcaption>
       <svg
         width={SVG_WIDTH}
         height={SVG_HEIGHT}
         viewBox={`0 0 ${SVG_WIDTH} ${SVG_HEIGHT}`}
-        className="text-amber"
+        className="text-accent"
         role="img"
         aria-label="Activity heatmap of daily logs and wins over the last 365 days"
       >

@@ -13,29 +13,33 @@ These rules layer on top of the user's global `~/.claude/CLAUDE.md`. When a rule
 - **Tailwind v4** — CSS-first config via `@theme` blocks in `app/globals.css`. **No `tailwind.config.js`.** PostCSS plugin via `postcss.config.mjs` already wired.
 - **JavaScript only**, never TypeScript. `jsconfig.json` aliases `@/* → ./*`.
 - **Supabase** for Postgres + Auth + RLS.
-- **Vercel deploy is on hold** until Andrei greenlights. Do NOT deploy without explicit go-ahead. v0.1 is verified entirely on `http://localhost:3000`.
+- **Vercel deploy is on hold** until Andrei greenlights. Do NOT deploy without explicit go-ahead. v0.2 verified on `http://localhost:3002`.
 
-## Aesthetic — Doctor Strange "Obsidian & Amber"
+## Aesthetic — Clean Modern (v0.2)
 
-CSS vars defined in `app/globals.css`:
+Design system tokens in `app/globals.css` via `@theme`. Light theme is the default; dark theme applied via `[data-theme="dark"]`; system preference fallback via `@media (prefers-color-scheme: dark)`.
 
-| Token                | Hex       | Use                               |
-| -------------------- | --------- | --------------------------------- |
-| `--color-background` | `#0E0B08` | Page background (near-black warm) |
-| `--color-surface`    | `#1A1410` | Cards, panels (warm charcoal)     |
-| `--color-text`       | `#F5E6C8` | Primary text (parchment)          |
-| `--color-amber`      | `#E8A33D` | Primary accent (amber)            |
-| `--color-rune-gold`  | `#C9A24C` | Subtle accent + sigil stroke      |
-| `--color-crimson`    | `#B22222` | Danger / destructive only         |
+| Token                 | Light     | Dark      | Use                          |
+| --------------------- | --------- | --------- | ---------------------------- |
+| `--color-bg`          | `#FAFAFA` | `#09090B` | Page background              |
+| `--color-surface`     | `#FFFFFF` | `#18181B` | Cards, panels, sidebar       |
+| `--color-subtle`      | `#F3F4F6` | `#27272A` | Hover states, input bg       |
+| `--color-text`        | `#18181B` | `#FAFAFA` | Primary text                 |
+| `--color-text-muted`  | `#52525B` | `#A1A1AA` | Secondary text               |
+| `--color-text-subtle` | `#71717A` | `#71717A` | Placeholder, tertiary        |
+| `--color-border`      | `#E4E4E7` | `#27272A` | Borders                      |
+| `--color-accent`      | `#6366F1` | `#818CF8` | Buttons, links, active state |
+| `--color-danger`      | `#DC2626` | `#EF4444` | Destructive actions          |
 
-- **Fonts:** Cinzel (display headers, via `next/font`) + Inter (body).
-- **Sigils:** rune-styled SVG line art; never emoji for tag/category visuals. Stroke is `currentColor` so they inherit rune-gold.
+- **Font:** Inter only (via `next/font`). Cinzel dropped.
+- **Sigils:** render as small colored inline dots + text label. Data model unchanged.
+- **Theme toggle:** light / dark / system — persisted in `localStorage('sanctum-theme')`, toggled in Settings via `<ThemeToggle>`.
 
-## Sigils (v0.1 only)
+## Sigils (v0.2)
 
-4 starter sigils, seeded by `handle_new_user` Supabase trigger: `breakthrough`, `persistence`, `learned`, `helped_someone`. Glyphs live in `components/Sigil/glyphs/`.
+4 starter sigils seeded by `handle_new_user` trigger: `breakthrough`, `persistence`, `learned`, `helped_someone`. Rendered as colored dots (`SIGIL_COLORS` map in `Sigil.jsx`). SVG glyphs in `components/Sigil/glyphs/` are unused but retained.
 
-**Custom user-defined tags ship in v0.2.** Do NOT add UI to manage tags in v0.1.
+**Custom user-defined tag UI ships in v0.3.** Do NOT add tag management UI in v0.2.
 
 ## Architecture conventions
 
@@ -84,17 +88,20 @@ CSS vars defined in `app/globals.css`:
 - `app/(app)/` — auth-walled routes (`dashboard`, `log/[date]`, `wins`, `journal/[year]/[month]`, `search`, `settings`); layout enforces `requireUser()` and renders shared header + nav + `<QuickWin>` FAB
 - `app/api/push/{subscribe,unsubscribe,tick}/` — Web Push endpoints; `tick` is `CRON_SECRET`-gated for Vercel Cron
 - `app/actions/` — server actions: `accomplishments.js`, `quick-links.js`, `scratchpad.js`, `todos.js`, `profile.js`, `push.js`
-- `components/` — PascalCase folders, each with `index.js` re-export. Includes `DailyLog`, `DailyLogEditor`, `DateScrubber`, `QuickWin`, `Sigil` (+ glyphs), `RuneDivider`, `StreakBadge`, `HeatmapCalendar`, `SearchForm`, `SearchResults`, `MonthBrowser`, `MonthSummary`, `CommandCenter` (Tabs + 3 panels), `SettingsForm`, `PushSubscribeButton`, primitives (`EmptyState`, `ErrorState`, `Skeleton`)
+- `components/` — PascalCase folders, each with `index.js` re-export. Includes `AppShell` (sidebar + bottom tab bar), `NavLink`, `ThemeProvider`, `ThemeToggle`, `DailyLog`, `DailyLogEditor`, `DateScrubber`, `DatePicker` (Radix Popover calendar), `QuickWin`, `Sigil` (colored dot + label; glyphs folder unused), `StreakBadge`, `HeatmapCalendar`, `SearchForm`, `SearchResults`, `MonthBrowser`, `MonthSummary`, `CommandCenter` (Tabs + 3 panels), `SettingsForm`, `PushSubscribeButton`, `TemplatesForm`, `AccomplishmentEditDialog`, `QuickLinkEditDialog`, `WinsList`, `PlanningPanel`, `OnThisDayRibbon`, `MarkdownView`, `SlashCommandMenu`, primitives (`EmptyState`, `ErrorState`, `Skeleton`)
 - `lib/supabase/` — `client.js` (browser), `server.js` (server-component cookie-aware), `admin.js` (service-role for cron tick, server-only)
 - `lib/auth/guards.js` — `requireUser()` server helper
-- `lib/db/` — typed-ish access helpers per resource: `daily-logs`, `accomplishments`, `quick-links`, `scratchpad`, `todos`, `profiles`, `search`
+- `lib/db/` — typed-ish access helpers per resource: `daily-logs`, `accomplishments`, `quick-links`, `scratchpad`, `todos`, `profiles`, `search`, `templates`, `images`
 - `lib/validation/` — Yup schemas, one file per resource (`daily-log`, `accomplishment`, `quick-link`, `todo`, `month-params`, `profile`)
 - `lib/format/date.js` — `todayInZone`, `formatLogDate` (date-fns + date-fns-tz)
 - `hooks/useAutosave.js` — debounced save status hook
-- `tests/` — Playwright E2E + fixtures (deferred to v0.2; framework not yet installed)
-- `supabase/migrations/` — versioned SQL: 0001 profiles, 0002 core tables, 0003 search indexes, 0004 streak fn, 0005 hardening, 0006 seed-tags trigger, 0007 month_summary fn, 0008 push_subscriptions
+- `hooks/useSlashCommands.js` — slash command detection + filtering for freeform editor
+- `supabase/migrations/` — versioned SQL: 0001 profiles, 0002 core tables, 0003 search indexes, 0004 streak fn, 0005 hardening, 0006 seed-tags trigger, 0007 month_summary fn, 0008 push_subscriptions, 0009 image_attachments, 0010 day_of_week_templates
 - `supabase/functions/` — Edge Functions placeholder (currently unused; bell pipeline goes through Vercel Cron path)
-- `public/sw.js` — Web Push service worker (registered by `<PushSubscribeButton>` from `/settings`)
+- `public/sw.js` — service worker: Web Push + offline shell cache + network-first fetch strategy
+- `public/icons/` — PWA icons (192, 512, maskable-512) generated via sharp from inline SVG
+- `app/manifest.webmanifest` — PWA manifest (display: standalone, share_target wired to `/share-in`)
+- `app/share-in/route.js` — PWA Share Sheet handler; creates a quick win from shared text/URL
 - `public/` — static assets
 - `.github/workflows/` — CI config
 - `.husky/` — pre-commit hooks

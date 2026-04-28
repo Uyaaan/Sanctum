@@ -56,7 +56,7 @@ export function SettingsForm({ initialProfile }) {
           id="display_name"
           type="text"
           {...register('display_name')}
-          className="border-border bg-surface text-text placeholder-text-subtle focus:border-amber focus:ring-amber w-full rounded border px-3 py-2 text-sm transition-colors outline-none focus:ring-1"
+          className="border-border bg-subtle text-text placeholder-text-subtle focus:border-accent focus:ring-accent w-full rounded border px-3 py-2 text-sm transition-colors outline-none focus:ring-1"
           placeholder="What should Sanctum call you?"
         />
       </Field>
@@ -71,7 +71,7 @@ export function SettingsForm({ initialProfile }) {
           id="sanctum_bell_time"
           type="time"
           {...register('sanctum_bell_time')}
-          className="border-border bg-surface text-text focus:border-amber focus:ring-amber rounded border px-3 py-2 text-sm transition-colors outline-none focus:ring-1"
+          className="border-border bg-subtle text-text focus:border-accent focus:ring-accent rounded border px-3 py-2 text-sm transition-colors outline-none focus:ring-1"
         />
       </Field>
 
@@ -83,7 +83,7 @@ export function SettingsForm({ initialProfile }) {
         <select
           id="sanctum_bell_timezone"
           {...register('sanctum_bell_timezone')}
-          className="border-border bg-surface text-text focus:border-amber focus:ring-amber w-full rounded border px-3 py-2 text-sm transition-colors outline-none focus:ring-1"
+          className="border-border bg-subtle text-text focus:border-accent focus:ring-accent w-full rounded border px-3 py-2 text-sm transition-colors outline-none focus:ring-1"
         >
           {COMMON_TIMEZONES.map((tz) => (
             <option key={tz} value={tz}>
@@ -96,7 +96,7 @@ export function SettingsForm({ initialProfile }) {
       <button
         type="submit"
         disabled={isSubmitting || isPending || !isDirty}
-        className="bg-amber text-background hover:bg-amber/90 rounded px-4 py-2 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+        className="bg-accent hover:bg-accent/90 rounded px-4 py-2 text-sm font-semibold text-white transition-colors disabled:cursor-not-allowed disabled:opacity-50"
       >
         {isPending || isSubmitting ? 'Saving…' : 'Save settings'}
       </button>
@@ -113,7 +113,7 @@ function Field({ id, label, error, hint, children }) {
       {children}
       {hint && <p className="text-text-subtle text-xs">{hint}</p>}
       {error && (
-        <p className="text-crimson text-xs" role="alert">
+        <p className="text-danger text-xs" role="alert">
           {error}
         </p>
       )}
