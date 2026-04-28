@@ -1,0 +1,10 @@
+node_modules
+.next
+.turbo
+build
+dist
+public/sw.js
+public/workbox-*.js
+.husky/_
+*.min.js
+package-lock.json
